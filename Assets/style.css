@@ -1,3 +1,38 @@
 body{
     background-color: #423745;
 }
+
+#root{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+header{
+    width: 100%;
+    margin: 25px;
+    display: flex;
+    justify-content:space-around
+}
+
+header div{
+    margin: 10px;
+    color: mediumpurple;
+    font-size: 30px;
+}
+
+section{
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+}
+
+h1{
+    color: white;
+    font-size: 100px;
+}
+
+p{
+    color: white;
+    font-size: 20px;
+}
