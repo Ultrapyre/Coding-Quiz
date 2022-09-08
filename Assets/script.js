@@ -6,6 +6,7 @@ var topbarEl = document.getElementById('topbar');
 //Initialize some universal values, like the score and the timer
 var score = 0;
 var timeLeft = 0;
+var scores = [];
 
 //Initializes the title screen
 var landing = document.createElement("section");
@@ -40,9 +41,11 @@ var evaluation = document.createElement("section");
 var totalScoreEl = document.createElement("p");
 
 var namePromptEl = document.createElement("div");
-var nameMessageEl = document.createElement("p");
+var nameMessageEl = document.createElement("h3");
 var nameInput = document.createElement("input", "type: text")
 nameMessageEl.textContent = "Enter your name: "
+var submitEl = document.createElement("button");
+submitEl.textContent = "Submit Score"
 
 var menuReturnEl = document.createElement("button");
 menuReturnEl.textContent = "Return to Main Menu";
@@ -52,6 +55,7 @@ menuReturnEl.addEventListener("click", function(){
 
 //Initializes the High Score scoreboard
 var highScores = document.createElement("section");
+var savedScores = document.createElement("div");
 
 //Removes anything already in the root and summons the title screen
 function titleScreen(){
@@ -140,6 +144,8 @@ function askQuestion(number){
     return selection;
 }
 
+//A convenient place to add and remove questions as needed.
+//Also lets the calling function know if there's no questions left.
 function accessQuestionArchive(number){
     var questionSet=[
         {
@@ -179,11 +185,24 @@ function displayResults(){
     evaluation.appendChild(totalScoreEl);
     namePromptEl.appendChild(nameMessageEl);
     namePromptEl.appendChild(nameInput);
+    namePromptEl.appendChild(submitEl);
     evaluation.appendChild(namePromptEl);
     evaluation.appendChild(menuReturnEl);
     rootEl.appendChild(evaluation);
     totalScoreEl.textContent = "Your total score is: " + score + "! You also had " + timeLeft + " seconds left on the clock!";
+    submitEl.addEventListener("click", submitScore)
 }
+
+//
+function submitScore(){
+    submitEl.removeEventListener("click", submitScore)
+    scores.push({
+        user: nameInput.value,
+        result: score 
+    })
+    console.log(scores);
+}
+
 
 //Removes anything in the root and opens the high score scoreboard
 function displayHighScores(){
@@ -193,7 +212,10 @@ function displayHighScores(){
 
     //Menu return button already exists so just reuse that
     highScores.appendChild(menuReturnEl);
+    highScores.appendChild(savedScores);
     rootEl.appendChild(highScores);
+
+    scores = localStorage.getItem("scores")
 }
 
 titleScreen();

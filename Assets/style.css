@@ -37,7 +37,7 @@ header{
 
 button{
     padding: 20px;
-    margin: 50px;
+    margin-top: 50px;
     cursor: pointer;
     font-size: 30px;
     background-color: #ab7ac9;
@@ -74,6 +74,12 @@ h1{
 h2{
     color: white;
     font-size: 50px;
+}
+
+h3{
+    color: white;
+    font-size: 36px;
+    margin: 30px;
 }
 
 p{
