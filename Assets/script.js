@@ -8,6 +8,14 @@ var score = 0;
 var timeLeft = 0;
 var scores = [];
 
+
+//Pulls high scores from local storage if any are present.
+    
+var savedata = JSON.parse(localStorage.getItem("scores"))
+if(savedata){
+    scores = savedata;
+}
+
 //Initializes the title screen
 var landing = document.createElement("section");
 var titleEl = document.createElement("h1");
@@ -30,6 +38,7 @@ var timerEl = document.getElementById('timer');
 var scoreEl = document.getElementById('score');
 var quiz = document.createElement("section");
 quiz.classList.add("quiz");
+var judgeEl = document.createElement("p");
 var askedQuestion = document.createElement("h2");
 var choiceOne = document.createElement("button");
 var choiceTwo = document.createElement("button");
@@ -45,7 +54,6 @@ var nameMessageEl = document.createElement("h3");
 var nameInput = document.createElement("input", "type: text")
 nameMessageEl.textContent = "Enter your name: "
 var submitEl = document.createElement("button");
-submitEl.textContent = "Submit Score"
 
 var menuReturnEl = document.createElement("button");
 menuReturnEl.textContent = "Return to Main Menu";
@@ -56,6 +64,18 @@ menuReturnEl.addEventListener("click", function(){
 //Initializes the High Score scoreboard
 var highScores = document.createElement("section");
 var savedScores = document.createElement("div");
+var clearScores = document.createElement("button");
+clearScores.textContent = "Clear all Saved Scores";
+clearScores.addEventListener("click", function(){
+    localStorage.clear("scores");
+    scores = [];
+    if(savedScores.firstChild){
+        while(savedScores.firstChild){
+            savedScores.removeChild(savedScores.firstChild);
+        }
+    }
+})
+highScores.classList.add("allScores")
 
 //Removes anything already in the root and summons the title screen
 function titleScreen(){
@@ -80,8 +100,15 @@ function startQuiz(){
     highScoreButtonEl.setAttribute("style", "display: none")
     timerEl.setAttribute("style", "display: block")
     rootEl.appendChild(quiz);
+    judgeEl.textContent = " " 
+    quiz.appendChild(askedQuestion);
+    quiz.appendChild(choiceOne);
+    quiz.appendChild(choiceTwo);
+    quiz.appendChild(choiceThree);
+    quiz.appendChild(choiceFour);
+    quiz.appendChild(judgeEl);
     score = 0;
-    timeLeft = 300;
+    timeLeft = 60;
 
     //starts the timer
     timerEl.textContent = timeLeft + " seconds left.";
@@ -94,10 +121,15 @@ function startQuiz(){
     }
     }, 1000);
     
+    //Makes a new question.
     var question = askQuestion(score);
     
+    //Tests if the selected answer matches the correct answer.
     quiz.addEventListener("click", function(event){
-        if(event.target&&event.target.innerHTML == question.rightAnswer){           
+        //If the answer is correct, score goes up by 1 and the next question is generated.
+        //If there are no questions left, stops the timer and move to the results screen.
+        if(event.target&&event.target.innerHTML == question.rightAnswer){  
+            judgeEl.textContent = "Correct! +1 Score!"         
             score++;
             question = askQuestion(score)
             if(question === "Finished"){
@@ -105,8 +137,11 @@ function startQuiz(){
                 displayResults();
             }
         }
+
+        //If the answer is incorrect, then time is subtracted from the clock, and the tiemr is updated to reflect.
+        //If the resulting time is 0 or below, set the clock to 0 and move to results screen.
         else if(event.target){
-            console.log("Wrong answer!");
+            judgeEl.textContent = "BZZZZT, Wrong! 10 seconds deducted!"
             timeLeft = timeLeft - 10
             if (timeLeft <= 0){
                 timeLeft = 0;
@@ -119,7 +154,7 @@ function startQuiz(){
     })
 }
 
-//Generates a question and listens for right or wrong answers.
+//Generates a question.
 function askQuestion(number){
     var selection = accessQuestionArchive(number);
     if (selection === "Finished"){
@@ -127,8 +162,10 @@ function askQuestion(number){
     }
 
     askedQuestion.textContent = selection.question;
-    quiz.appendChild(askedQuestion);
 
+    /*Scrambles the answers so the correct button is randomized.
+    After all, it wouldn't do if a quiz has all option As as the correct ones!
+    */
     var scrambledAnswers = selection.answers;
     scrambledAnswers.sort(() => Math.random() - 0.5);
     choiceOne.textContent = scrambledAnswers[0];
@@ -136,17 +173,18 @@ function askQuestion(number){
     choiceThree.textContent = scrambledAnswers[2];
     choiceFour.textContent = scrambledAnswers[3];
 
-    quiz.appendChild(choiceOne);
-    quiz.appendChild(choiceTwo);
-    quiz.appendChild(choiceThree);
-    quiz.appendChild(choiceFour);
-
     return selection;
 }
 
 //A convenient place to add and remove questions as needed.
 //Also lets the calling function know if there's no questions left.
 function accessQuestionArchive(number){
+    
+    /*More questions can be added here on the fly.
+    A question, a set of four answers, and a right answer.
+    Whoever's looking at this... don't judge me too harshly for the placeholders.
+    I'm not exactly a 'quizzing' sort of person... >.>
+    */
     var questionSet=[
         {
         question: "Sample Question",
@@ -164,6 +202,8 @@ function accessQuestionArchive(number){
         answers: ["Correct again", "Incorrect 1", "Incorrect 2", "Incorrect 3"]
     }
     ]
+
+    //Returns the question set... unless there are none left, in which case a signal that it's finished is sent back up.
     if(questionSet[number]==undefined){
         return "Finished"
     }
@@ -181,7 +221,8 @@ function displayResults(){
     highScoreButtonEl.setAttribute("style", "display: block")
     timerEl.setAttribute("style", "display: none")
     timerEl.textContent = " ";
-
+    submitEl.textContent = "Submit Score"
+    
     evaluation.appendChild(totalScoreEl);
     namePromptEl.appendChild(nameMessageEl);
     namePromptEl.appendChild(nameInput);
@@ -193,14 +234,21 @@ function displayResults(){
     submitEl.addEventListener("click", submitScore)
 }
 
-//
+//Submits the score gained.
 function submitScore(){
+    //Turns off the button once score is submitted.
     submitEl.removeEventListener("click", submitScore)
+    if (scores == "There is nothing here yet"){
+        scores = [];
+    }
+    submitEl.textContent = "Score Submitted!"
+
+    //Adds the new high score to the local storage
     scores.push({
         user: nameInput.value,
         result: score 
     })
-    console.log(scores);
+    localStorage.setItem("scores", JSON.stringify(scores));
 }
 
 
@@ -211,37 +259,29 @@ function displayHighScores(){
     }
 
     //Menu return button already exists so just reuse that
-    highScores.appendChild(menuReturnEl);
+    
+    if(savedScores.firstChild){
+        while(savedScores.firstChild){
+            savedScores.removeChild(savedScores.firstChild);
+        }
+    }
+
     highScores.appendChild(savedScores);
+    highScores.appendChild(clearScores)
+    highScores.appendChild(menuReturnEl);
     rootEl.appendChild(highScores);
 
-    scores = localStorage.getItem("scores")
+    //If there are saved scores, output results.
+    if (scores!== null){
+        var singleResult;
+        for (var i = 0; i < scores.length; i++){
+            singleResult = document.createElement("div")
+            singleResult.className = "score";
+            singleResult.textContent = scores[i].user + " - " + scores[i].result;
+            savedScores.appendChild(singleResult);
+        }
+    }
 }
 
+//After all that, this function starts it all.
 titleScreen();
-//A huge-ass to-do list for later:
-/*Initialization
-Probably will make the whole thing in Javascript, partially for practice. Might make it easier to loop, who knows.
-A Title, A descriptor, and a start button.
-Has a 'High Scores' button to indicate past attempts
-    Sorted in order of score, perhaps
-*/
-
-/*The Quiz - Begins when start button pressed
-Create question, make the timer appear and tick down, and also a bunch of possible answers
-    Make a function for the timer and its functions
-    Perhaps add a spot in the code to pull question and answer sets from
-        Answers oughta be 3 wrong answers and 1 right answer... how do I randomize the options?
-        Questions shouldn't repeat, but they need to be randomized too... hmm.
-    If correct answer pressed, add a point. If wrong answer pressed, deduct time from the timer.
-        Perhaps add fancy 'point added' and 'time deducted' labels that fade away?
-Once timer hits 0, quiz ends, terminate operation
-*/
-
-/*The Evaluation - Begins when Quiz finishes
-Change website page to note the score obtained
-    Perhaps also add a 'questions answered correctly' value?
-Allows input of high score and saves it in the local directory so it persists after refresh
-    Only able to save the high score once, no need for leaderboard spam
-Whether saved high score or not, have a button to loop back to initialization stage
- */
