@@ -36,8 +36,6 @@ startEl.textContent = "Start Quiz";
 //Initializes the quiz itself
 var timerEl = document.getElementById('timer');
 var scoreEl = document.getElementById('score');
-var quiz = document.createElement("section");
-quiz.classList.add("quiz");
 var judgeEl = document.createElement("p");
 var askedQuestion = document.createElement("h2");
 var choiceOne = document.createElement("button");
@@ -94,22 +92,24 @@ function titleScreen(){
 
 //Removes anything in the root and starts the quiz
 function startQuiz(){
-    if(rootEl.firstChild){
-        rootEl.removeChild(rootEl.firstChild);
-    }
-    highScoreButtonEl.setAttribute("style", "display: none")
-    timerEl.setAttribute("style", "display: block")
-    rootEl.appendChild(quiz);
-    judgeEl.textContent = " " 
+    
+    var quiz = document.createElement("section");
+    quiz.classList.add("quiz");
     quiz.appendChild(askedQuestion);
     quiz.appendChild(choiceOne);
     quiz.appendChild(choiceTwo);
     quiz.appendChild(choiceThree);
     quiz.appendChild(choiceFour);
     quiz.appendChild(judgeEl);
+    if(rootEl.firstChild){
+        rootEl.removeChild(rootEl.firstChild);
+    }
+    highScoreButtonEl.setAttribute("style", "display: none")
+    timerEl.setAttribute("style", "display: block")
+    judgeEl.textContent = " " 
+    rootEl.appendChild(quiz);
     score = 0;
     timeLeft = 60;
-
     //starts the timer
     timerEl.textContent = timeLeft + " seconds left.";
     var timeInterval = setInterval(function () {
@@ -142,7 +142,7 @@ function startQuiz(){
         //If the resulting time is 0 or below, set the clock to 0 and move to results screen.
         else if(event.target){
             judgeEl.textContent = "BZZZZT, Wrong! 10 seconds deducted!"
-            timeLeft = timeLeft - 10
+            timeLeft = timeLeft - 10;
             if (timeLeft <= 0){
                 timeLeft = 0;
                 clearInterval(timeInterval);
@@ -160,7 +160,7 @@ function askQuestion(number){
     if (selection === "Finished"){
         return "Finished";
     }
-
+    
     askedQuestion.textContent = selection.question;
 
     /*Scrambles the answers so the correct button is randomized.
