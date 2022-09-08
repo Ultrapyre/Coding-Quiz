@@ -35,7 +35,7 @@ header{
     display:none;
 }
 
-div button{
+button{
     padding: 20px;
     margin: 50px;
     cursor: pointer;
@@ -43,6 +43,13 @@ div button{
     background-color: #ab7ac9;
     color: white;
     border-radius: 30px;
+}
+
+.quiz button{
+    flex-direction: column;
+    width: 75%;
+    margin: 0;
+    align-items: center;
 }
 
 input{
@@ -62,6 +69,11 @@ section{
 h1{
     color: white;
     font-size: 100px;
+}
+
+h2{
+    color: white;
+    font-size: 50px;
 }
 
 p{

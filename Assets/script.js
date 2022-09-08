@@ -26,10 +26,14 @@ startEl.textContent = "Start Quiz";
 
 //Initializes the quiz itself
 var timerEl = document.getElementById('timer');
+var scoreEl = document.getElementById('score');
 var quiz = document.createElement("section");
-var questionEl = document.createElement("div");
-
-
+quiz.classList.add("quiz");
+var askedQuestion = document.createElement("h2");
+var choiceOne = document.createElement("button");
+var choiceTwo = document.createElement("button");
+var choiceThree = document.createElement("button");
+var choiceFour = document.createElement("button");
 
 //Initializes the Evaluation screen
 var evaluation = document.createElement("section");
@@ -73,12 +77,9 @@ function startQuiz(){
     timerEl.setAttribute("style", "display: block")
     rootEl.appendChild(quiz);
     score = 0;
-    timeLeft = 5;
-    startTimer();
-}
+    timeLeft = 300;
 
-//Starts the timer
-function startTimer(){
+    //starts the timer
     timerEl.textContent = timeLeft + " seconds left.";
     var timeInterval = setInterval(function () {
       timeLeft--;
@@ -87,12 +88,83 @@ function startTimer(){
         clearInterval(timeInterval);
         displayResults();
     }
-  }, 1000);
+    }, 1000);
+    
+    var question = askQuestion(score);
+    
+    quiz.addEventListener("click", function(event){
+        if(event.target&&event.target.innerHTML == question.rightAnswer){           
+            score++;
+            question = askQuestion(score)
+            if(question === "Finished"){
+                clearInterval(timeInterval);
+                displayResults();
+            }
+        }
+        else if(event.target){
+            console.log("Wrong answer!");
+            timeLeft = timeLeft - 10
+            if (timeLeft <= 0){
+                timeLeft = 0;
+                clearInterval(timeInterval);
+                displayResults();
+            }
+            timerEl.textContent = timeLeft + " seconds left.";
+            
+        }
+    })
 }
 
 //Generates a question and listens for right or wrong answers.
-function askQuestion(){
+function askQuestion(number){
+    var selection = accessQuestionArchive(number);
+    if (selection === "Finished"){
+        return "Finished";
+    }
 
+    askedQuestion.textContent = selection.question;
+    quiz.appendChild(askedQuestion);
+
+    var scrambledAnswers = selection.answers;
+    scrambledAnswers.sort(() => Math.random() - 0.5);
+    choiceOne.textContent = scrambledAnswers[0];
+    choiceTwo.textContent = scrambledAnswers[1];
+    choiceThree.textContent = scrambledAnswers[2];
+    choiceFour.textContent = scrambledAnswers[3];
+
+    quiz.appendChild(choiceOne);
+    quiz.appendChild(choiceTwo);
+    quiz.appendChild(choiceThree);
+    quiz.appendChild(choiceFour);
+
+    return selection;
+}
+
+function accessQuestionArchive(number){
+    var questionSet=[
+        {
+        question: "Sample Question",
+        rightAnswer: "Correct",
+        answers: ["Correct", "Incorrect 1", "Incorrect 2", "Incorrect 3"]
+    },
+    {
+        question: "Another Sample Question",
+        rightAnswer: "Also Correct",
+        answers: ["Also Correct", "Incorrect 1", "Incorrect 2", "Incorrect 3"]
+    },
+    {
+        question: "Third Sample Question",
+        rightAnswer: "Correct again",
+        answers: ["Correct again", "Incorrect 1", "Incorrect 2", "Incorrect 3"]
+    }
+    ]
+    if(questionSet[number]==undefined){
+        return "Finished"
+    }
+    else{
+        var selection = questionSet[number];
+        return selection;
+    }
 }
 
 //Removes anything already in the root and summons the evaluation screen
