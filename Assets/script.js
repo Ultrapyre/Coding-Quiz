@@ -11,10 +11,18 @@ var timeLeft = 0;
 var landing = document.createElement("section");
 var titleEl = document.createElement("h1");
 var welcomeEl = document.createElement("p");
+var startEl = document.createElement("button");
+var highScoreButtonEl = document.getElementById("highscore")
+highScoreButtonEl.addEventListener("click", function(){
+    displayHighScores();
+})
+
+startEl.addEventListener("click", function(){
+    startQuiz()
+})
 titleEl.textContent = "Coding Quiz";   
 welcomeEl.textContent = "This little website will test your knowledge of Javascript!";
-landing.appendChild(titleEl);
-landing.appendChild(welcomeEl);
+startEl.textContent = "Start Quiz";
 
 //Initializes the quiz itself
 var timerEl = document.getElementById('timer');
@@ -27,12 +35,31 @@ var questionEl = document.createElement("div");
 var evaluation = document.createElement("section");
 var totalScoreEl = document.createElement("p");
 
+var namePromptEl = document.createElement("div");
+var nameMessageEl = document.createElement("p");
+var nameInput = document.createElement("input", "type: text")
+nameMessageEl.textContent = "Enter your name: "
+
+var menuReturnEl = document.createElement("button");
+menuReturnEl.textContent = "Return to Main Menu";
+menuReturnEl.addEventListener("click", function(){
+    titleScreen()
+})
+
+//Initializes the High Score scoreboard
+var highScores = document.createElement("section");
 
 //Removes anything already in the root and summons the title screen
 function titleScreen(){
     if(rootEl.firstChild){
         rootEl.removeChild(rootEl.firstChild);
     }
+    highScoreButtonEl.setAttribute("style", "display: block")
+    timerEl.setAttribute("style", "display: none")
+    
+    landing.appendChild(titleEl);
+    landing.appendChild(welcomeEl);
+    landing.appendChild(startEl);
     rootEl.appendChild(landing);
 }
 
@@ -42,22 +69,24 @@ function startQuiz(){
     if(rootEl.firstChild){
         rootEl.removeChild(rootEl.firstChild);
     }
+    highScoreButtonEl.setAttribute("style", "display: none")
+    timerEl.setAttribute("style", "display: block")
     rootEl.appendChild(quiz);
     score = 0;
-    timeLeft = 30;
+    timeLeft = 5;
     startTimer();
 }
 
 //Starts the timer
 function startTimer(){
+    timerEl.textContent = timeLeft + " seconds left.";
     var timeInterval = setInterval(function () {
+      timeLeft--;
       timerEl.textContent = timeLeft + " seconds left.";
     if (timeLeft === 0){
-      timerEl.textContent = "";
-      clearInterval(timeInterval);
-      displayResults();
+        clearInterval(timeInterval);
+        displayResults();
     }
-      timeLeft--;
   }, 1000);
 }
 
@@ -71,10 +100,29 @@ function displayResults(){
     if(rootEl.firstChild){
         rootEl.removeChild(rootEl.firstChild);
     }
+    highScoreButtonEl.setAttribute("style", "display: block")
+    timerEl.setAttribute("style", "display: none")
+    timerEl.textContent = " ";
+
+    evaluation.appendChild(totalScoreEl);
+    namePromptEl.appendChild(nameMessageEl);
+    namePromptEl.appendChild(nameInput);
+    evaluation.appendChild(namePromptEl);
+    evaluation.appendChild(menuReturnEl);
     rootEl.appendChild(evaluation);
     totalScoreEl.textContent = "Your total score is: " + score + "! You also had " + timeLeft + " seconds left on the clock!";
 }
 
+//Removes anything in the root and opens the high score scoreboard
+function displayHighScores(){
+    if(rootEl.firstChild){
+        rootEl.removeChild(rootEl.firstChild);
+    }
+
+    //Menu return button already exists so just reuse that
+    highScores.appendChild(menuReturnEl);
+    rootEl.appendChild(highScores);
+}
 
 titleScreen();
 //A huge-ass to-do list for later:

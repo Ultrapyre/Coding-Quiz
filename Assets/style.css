@@ -10,15 +10,47 @@ body{
 
 header{
     width: 100%;
-    margin: 25px;
     display: flex;
-    justify-content:space-around
+    background-color: #6a5370;
+    justify-content: space-between;
 }
 
-header div{
+#highscore{
+    padding: 20px;
     margin: 10px;
-    color: mediumpurple;
+    cursor: pointer;
     font-size: 30px;
+    background-color: #ab7ac9;
+    color: white;
+    border-radius: 30px;
+}
+
+#timer{
+    padding: 20px;
+    margin: 10px;
+    font-size: 30px;
+    background-color: #ab7ac9;
+    color: white;
+    border-radius: 30px;
+    display:none;
+}
+
+div button{
+    padding: 20px;
+    margin: 50px;
+    cursor: pointer;
+    font-size: 30px;
+    background-color: #ab7ac9;
+    color: white;
+    border-radius: 30px;
+}
+
+input{
+    width: 50%;
+    padding: 20px;
+    margin: 50px;
+    font-size: 30px;
+    box-sizing: border-box;
 }
 
 section{
